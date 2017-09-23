@@ -26,7 +26,9 @@ contract Project {
         uint claimId;
     }
     
-    mapping( address => uint8 ) judgeRating;
+    Proposal[] taskList;
+    
+    mapping( address => uint8 ) judgeRating; // do we need it?
     
     enum JudgeDecision {
         UNDECIDED,
@@ -44,13 +46,16 @@ contract Project {
         uint proposalId;
         string message;
         uint salary;
-        uint deadlineClaimVoting;
+        uint deadlineClaimVoting; // how do we manage that?
         mapping( address => uint ) judgeMapping;
         ProposalJudge[] judges;
     }
-    
-    Proposal[] taskList;
+
     Claim[] claimList;
+    
+    //==========================================================================
+    // PROPOSAL METHODS
+    //==========================================================================
     
     function createProposal(string _taskDescription, 
         uint _price, 
@@ -113,11 +118,15 @@ contract Project {
         }
     }
     
-    function getNewClaim() {
+    //==========================================================================
+    // JUDGE METHODS
+    //==========================================================================
+    
+    function getNewClaim() public {
         // msg.sender == judge
     }
     
-    function finalizeClaim(uint claimId) {
+    function finalizeClaim(uint claimId) public {
         // decide final claim decision
     }
         
@@ -136,17 +145,24 @@ contract Project {
         }
     }
     
+    //==========================================================================
+    // MONEY RETRIEVAL
+    //==========================================================================
+    
     function getMoneyAsEmployer(uint proposalId) public {
-        if( taskList[proposalId].state == ProposalState.PAY_EMPLOYER &&
+        if( ( taskList[proposalId].state == ProposalState.PAY_EMPLOYER || // claim issued and decided in favor of employer
+              taskList[proposalId].state == ProposalState.PROPOSED ) && // or recall money just at the start
             msg.sender == taskList[proposalId].employer) {
-            // send money
+            // send money back
             
             delete taskList[proposalId];
         }
     }
     
     function getMoneyAsEmployee(uint proposalId) public {
-        if( taskList[proposalId].state == ProposalState.PAY_EMPLOYEE &&
+        if( ( taskList[proposalId].state == ProposalState.PAY_EMPLOYEE || // claim resolved in favor of employee
+              ( taskList[proposalId].state == ProposalState.FINISHED && // task finished and no claim was issued
+                now >= taskList[proposalId].deadlineClaimDate ) ) &&
             msg.sender == taskList[proposalId].employee) {
             // send money
             
@@ -156,7 +172,7 @@ contract Project {
     
     function getMoneyAsJudge(uint claimId) public {
         uint proposalId = claimList[claimId].proposalId;
-        if( ( taskList[proposalId].state == ProposalState.PAY_EMPLOYEE ||
+        if( ( taskList[proposalId].state == ProposalState.PAY_EMPLOYEE || // there was a claim and it was decided
             taskList[proposalId].state == ProposalState.PAY_EMPLOYER ) &&
             msg.sender == taskList[proposalId].employee ) {
             // send money from claim salary
