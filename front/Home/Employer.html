@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <link rel="stylesheet" type="text/css" href="../icoHack.css">
+     
+    <div class="tab">
+      <button class="tablinks" onclick="openCity(event, 'Employer')" id="defaultOpen">Employer</button>
+      <button class="tablinks" onclick="window.location.href = 'Employee.html';" >Employee</button>
+      <button class="tablinks" onclick="window.location.href = 'Judge.html';">Judge</button>
+    </div>
+
+    <div id="Employer" class="tabcontent">
+      <p>I want to create task</p>
+      <form class="buttonForm" action="../EmployerNewTask.html" method="get">
+          <button>New task</button>
+      </form>
+
+      <form class="buttonForm" action="../EmployerMyTasks.html" method="get">
+          <button>My tasks</button>
+      </form>
+    </div>
+        
+    <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
+    <script src="../icoHack.js"></script>
+  </body>
+</html>                              
+
+

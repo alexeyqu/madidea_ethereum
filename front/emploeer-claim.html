@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <link rel="stylesheet" type="text/css" href="icoHack.css">
+     
+    <div class="tab">
+      <button class="tablinks" onclick="openCity(event, 'Employer')" id="defaultOpen">Employer</button>
+      <button class="tablinks" onclick="window.location.href = 'Home/Employee.html';" >Employee</button>
+      <button class="tablinks" onclick="window.location.href = 'Home/Judge.html';">Judge</button>
+    </div>
+
+    <div id="Employer" class="tabcontent">
+      <h2>New claim</h2>
+
+  
+
+  <form action="task.html">
+    Project name:<br> 
+      <input type="text" name="projectname"><br>
+    Comment:<br>
+      <input type="text" name="comment"><br><br>
+    <input type="submit" value="Submit" class="buttonForm">
+    <input type="reset" value="Reset" class="buttonForm">
+    
+  </form>
+  </div>
+  <div>
+    <form class="homebutton" action="Home/Employer.html" method="get">
+          <button>Home</button>
+    </form>
+  </div>
+
+    <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
+    <script src="icoHack.js"></script>
+  </body>
+</html>                              
+
+

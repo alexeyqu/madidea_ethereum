@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <link rel="stylesheet" type="text/css" href="icoHack.css">
+     
+    <div class="tab">
+      <button class="tablinks" onclick="window.location.href = 'Home/Employer.html';">Employer</button>
+      <button class="tablinks" onclick="window.location.href = 'Home/Employee.html';" >Employee</button>
+      <button class="tablinks" onclick="openCity(event, 'Judge')" id="defaultOpen">Judge</button>
+    </div>
+
+
+    <div id="Judge" class="tabcontent">
+      <h3>Claims</h3>
+      <form action="JudgeGetTask.html" method="get">
+        <select class="select" name="Projects">
+          <option value="project1">claim1</option>
+          <option value="project2">claimt2</option>
+          <option value="project3">claim3</option>
+          <option value="project4">claim4</option>
+          <input type="submit">
+
+        </select>
+      </form>
+    </div>
+    <div>
+    <form class="homebutton" action="Home/Judge.html" method="get">
+          <button>Home</button>
+    </form>
+  </div>
+        
+    <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
+    <script src="icoHack.js"></script>
+  </body>
+</html>                              
+
+
