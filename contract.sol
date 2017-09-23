@@ -3,8 +3,7 @@ contract Project {
     uint8 constant MIN_JUDGES = 7;
     
     enum ProposalState { 
-        PROPOSED,
-        ACCEPTED,
+        IN_WORK,
         FINISHED,
         IN_COURT,
         PAY_EMPLOYER,
@@ -52,6 +51,7 @@ contract Project {
     }
 
     Claim[] claimList;
+    int[] openClaimIds;
     
     //==========================================================================
     // PROPOSAL METHODS
@@ -61,12 +61,15 @@ contract Project {
         uint _price, 
         uint8 _numJudges, 
         uint daysToDeadline, 
-        uint daysToClaimDeadline) public returns (uint proposalId) {
+        uint daysToClaimDeadline,
+        address _employee) public returns (uint proposalId)
+        {
             Proposal newProposal;
             newProposal.employer = msg.sender;
+            newProposal.employee = _employee;
             newProposal.taskDescription = _taskDescription;
             newProposal.price = _price;
-            newProposal.state = ProposalState.PROPOSED;
+            newProposal.state = ProposalState.IN_WORK;
             newProposal.numJudges = _numJudges;
             newProposal.deadlineWorkDate = now + daysToDeadline;
             newProposal.deadlineClaimDate = now + daysToClaimDeadline;
@@ -113,7 +116,7 @@ contract Project {
            // newClaim.judges = selectJudges(taskList[proposalId].numJudges);
             
             claimList.push(newClaim);
-            
+            openClaimIds.push(claimList.length - 1);
             return claimList.length - 1;
         }
     }
@@ -122,11 +125,80 @@ contract Project {
     // JUDGE METHODS
     //==========================================================================
     
+    function dropArrayIndex(uint[] array, uint index) private {
+        if (index >= array.length) return;
+
+        for (uint i = index; i < array.length-1; i++) {
+            array[i] = array[i + 1];
+        }
+        delete array[array.length - 1];
+        array.length--;
+    }
+    
     function getNewClaim() public {
-        // msg.sender == judge
+        // todo - take money here
+        // todo - find claims with overdue judges
+        uint randomOpenClaimIdOfId = 0; // todo - fix this shit
+        Claim storage claim = claimList[openClaimIds[randomOpenClaimIdOfId]];
+        claim.judges.push(ProposalJudge({
+            id: msg.sender,
+            decision: JudgeDecision.UNDECIDED,
+            deadlineJudgeVoting: now + 5 days // todo - take from proposal
+        }));
+        Proposal storage proposal = taskList[claim.proposalId];
+        if (claim.judges.length == proposal.numJudges) {
+            dropArrayIndex(openClaimIds, randomOpenClaimIdOfId);
+        }
+    }
+    
+    function updateJudgesList(uint claimId) private {
+        Claim storage claim = claimList[claimId];
+        uint8 currentIndex = 0;
+        for (int i = 0; i < claim.judges.length; i++) {
+            if (claim.judges[i].decision != JudgeDecision.UNDECIDED &&
+                currentIndex != i) 
+            {
+                claim.judges[currentIndex] = claim.judges[i];
+            }
+        }
+        claim.judges.length = currentIndex;
     }
     
     function finalizeClaim(uint claimId) public {
+        Claim storage claim = claimList[claimId];
+        Proposal storage proposal = taskList[claim.proposalId];
+        if (claimId != 0 &&
+            proposal.state == ProposalState.IN_COURT &&
+            claim.deadlineClaimVoting < now &&
+            claim.judges.length == proposal.numJudges) 
+            
+        {
+            uint8 voteForEmployee = 0;
+            uint8 voteForEmployer = 0;
+            bool hasUnvoted = false;
+            for (uint8 i = 0; i < claim.judges.length; i++) {
+                ProposalJudge storage judge = claim.judges[i];
+                if (judge.decision == JudgeDecision.UNDECIDED) {
+                    hasUnvoted = true;
+                } else if (judge.decision == JudgeDecision.EMPLOYER) {
+                    voteForEmployer++;
+                } else {
+                    voteForEmployee++;
+                }
+            }
+            if (!hasUnvoted) {
+                if (voteForEmployee > voteForEmployer) {
+                    proposal.state = ProposalState.PAY_EMPLOYEE;
+                } else {
+                    proposal.state = ProposalState.PAY_EMPLOYER;
+                }
+            } else {
+                updateJudgesList();
+                if (claim.judges.length != proposal.numJudges) {
+                    openClaimIds.push(claimId);
+                }
+            }
+        }
         // decide final claim decision
     }
         
