@@ -36,7 +36,6 @@ contract Project {
     Proposal[] taskList;
     
     // mapping( address => uint8 ) judgeRating;
-    mapping(address => bool) judgePayment;
     mapping(address => uint) judgePendingClaimId;
     
     enum JudgeDecision {
@@ -184,26 +183,6 @@ contract Project {
     // JUDGE METHODS
     //==========================================================================
     
-    event payJudgementFeeResult(bool success);
-
-    function payJudgementFee(uint claimId) public payable {
-        if( judgePayment[msg.sender] ) {
-            payJudgementFeeResult(false);
-            return;
-        }
-        
-        uint amount = 1 * calculateFeeMultiplier(); // todo: calculate wisely
-
-        if( msg.value != amount ) {
-            payJudgementFeeResult(false);
-            return;
-        }
-
-     	claimList[claimId].salary += msg.value;
-
-        judgePayment[msg.sender] = true;
-    }
-    
     function kickUpClaims() private {
         for (uint i = 0; i < claimList.length; i++) {
             Claim storage claim = claimList[i];
@@ -249,7 +228,6 @@ contract Project {
             return;
         }
 
-        judgePayment[msg.sender] = false;
         Claim storage claim = claimList[claimId];
         claimJudges[claimId].push(ProposalJudge({
             id: msg.sender,
@@ -474,7 +452,7 @@ contract Project {
 
     event getAllProposalsForEmployeeResult(bool success, uint proposalId, string proposalName);
 
-    function getAllProposalsForEmployee(address _employee) public {
+    function getAllProposalsForEmployee(address _employee) constant public {
         for (uint i = 0; i < taskList.length; i++) {
             Proposal storage proposal = taskList[i];
             if( proposal.employee == _employee ) {
@@ -485,7 +463,7 @@ contract Project {
 
     event getAllProposalsForEmployerResult(bool success, uint proposalId, string proposalName);
 
-    function getAllProposalsForEmployer(address _employer) public {
+    function getAllProposalsForEmployer(address _employer) constant public {
         for (uint i = 0; i < taskList.length; i++) {
             Proposal storage proposal = taskList[i];
             if( proposal.employer == _employer ) {
@@ -496,7 +474,7 @@ contract Project {
 
     event getAllProposalsForJudgeResult(bool success, uint proposalId, string proposalName);
 
-    function getAllProposalsForJudge(address _judge) public {
+    function getAllProposalsForJudge(address _judge) constant public {
         for (uint i = 0; i < claimList.length; i++) {
             uint proposalId = claimList[i].proposalId;
             string storage proposalName = taskList[proposalId].name;
