@@ -14,26 +14,35 @@
 
   
 
-      <form action="task.html">
+      <div>
         Project name:<br> 
           <input type="text" name="projectname"><br>
         Description:<br>
           <input type="text" name="description"><br>
         Employee:<br>
           <input type="text" name="employee"><br>
+        <span class="tooltip" data-tooltip="Number of money you are willing to pay for the project">?</span>
         Price:<br>
           <input type="number" name="price"><br>
-        Work deadline (days):<br>
+        <span class="tooltip" data-tooltip="Time given to the employee to complete the task">?</span>
+        Worker deadline (days):<br>
           <input type="number" name="work-deadline"><br>
-        Claim deadline (days):<br>
+        Number of judges:<br>
+          <input type="number" name="number-of-judges" ><br>
+        <span class="tooltip" data-tooltip="Days after worker deadline you'll be able to open a claim">?</span>
+        Time to open a cliam (days):<br>
           <input type="number" name="claim-deadline"><br>
-        Judge deadline (days):<br>
-          <input type="number" name="judge-deadline"><br><br>
-        
+        <span class="tooltip" data-tooltip="Days you claim must be closed">?</span>
+        Time to close the claim(days):<br>
+          <input type="number" name="judge-deadline"><br>
+        <span class="tooltip" data-tooltip="Days particular judge must deside">?</span>
+        Time for judge decision(days):<br>
+          <input type="number" name="judge-decision-deadline"><br><br>
+
         <input type="submit" id="create-task" value="Create" class="button-form">
         <input type="reset" value="Cancel" onclick="window.location.href='home.html?from=employer'" class="button-form">
         
-      </form>
+      </div>
     </div>
 
     <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
