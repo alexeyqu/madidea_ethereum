@@ -3,8 +3,14 @@ contract Project {
 
     // function Project() public {
     //     claimList.push(Claim({
-
-    //     }));
+    //         proposalId: 0,
+    //         message: "",
+    //         salary: 0,
+    //         deadlineClaimVoting: 0,
+    //         finalDecision: 0,
+    //         noDecision: false,
+    //         judgeWinnersCount: 0
+    //     });
     // }
 
     uint8 constant MIN_JUDGES = 7;
@@ -76,12 +82,17 @@ contract Project {
         uint deadlineJudgeVoting;
     }
     
+    struct IdOptional {
+        uint id;
+        bool exists;
+    }
+
     struct Claim {
         uint proposalId;
         string message;
         uint salary;
         uint deadlineClaimVoting; // how do we manage that?
-        mapping( address => uint ) judgeMapping;
+        mapping( address => IdOptional ) judgeMapping;
         JudgeDecision finalDecision;
         uint judgeWinnersCount;
         bool noDecision;
@@ -176,8 +187,7 @@ contract Project {
     event openClaimResult(bool success, uint claimId);
 
     function openClaim(uint _proposalId, 
-        string _message,
-        uint _deadlineVoting) public payable
+        string _message) public payable
     {
         Proposal memory proposal = taskList[_proposalId];
 
@@ -192,7 +202,7 @@ contract Project {
             proposalId: _proposalId,
             message: _message,
             salary: msg.value,
-            deadlineClaimVoting: now + _deadlineVoting,
+            deadlineClaimVoting: now + proposal.daysForIndividualVote * 1 days,
             finalDecision: JudgeDecision.UNDECIDED,
             noDecision: false,
             judgeWinnersCount: 0
@@ -235,7 +245,7 @@ contract Project {
         uint randomOpenClaimIdOfId = 0; // todo - fix this shit
 		uint claimId = openClaimIds[randomOpenClaimIdOfId];
         judgePendingClaimId[msg.sender] = claimId;
-        getNewClaimResult(true, claimId);
+        getNewClaimResult(true, claimList[claimId].proposalId);
     }
 
 
@@ -268,6 +278,9 @@ contract Project {
 
         if (claimJudges[claimId].length == proposal.numJudges) {
             dropOpenClaimId(claimIdToOpenClaimId[claimId]);
+        } else {
+            claimList[claimId].judgeMapping[msg.sender].id = claimJudges[claimId].length-1;
+            claimList[claimId].judgeMapping[msg.sender].exists = true;
         }
 
         acceptClaimResult(true);
@@ -300,7 +313,7 @@ contract Project {
         uint8 voteForEmployee = 0;
         uint8 voteForEmployer = 0;
         bool hasUnvoted = false;
-        for (uint8 i = 0; i < claimJudges[claimId].length; i++){
+        for (uint8 i = 0; i < claimJudges[claimId].length; i++) {
             ProposalJudge storage judge = claimJudges[claimId][i];
             if (judge.decision == JudgeDecision.UNDECIDED) {
                 hasUnvoted = true;
@@ -309,7 +322,7 @@ contract Project {
             } else {
                 voteForEmployee++;
             }
-            }
+        }
         if (claimId != 0 &&
             proposal.state == ProposalState.IN_COURT) 
             
@@ -339,20 +352,34 @@ contract Project {
 
     event decideClaimResult(bool success);
 
-    function decideClaim(uint claimId, bool isEmployerInFavor) public {
+    function decideClaim(uint proposalId, bool isEmployerInFavor) public {
+        uint claimId;
+        for (uint i = 0; i < claimList.length; i++) {
+            if (claimList[i].proposalId == proposalId) {
+                claimId = i;
+                break;
+            }
+        }
         Claim storage claim = claimList[claimId];
 		finalizeClaim(claimId);
-        uint judgeId = claim.judgeMapping[msg.sender];
+		
+        if(!claim.judgeMapping[msg.sender].exists) {
+            decideClaimResult(false);
+            return;
+        }
+
+        uint judgeId = claim.judgeMapping[msg.sender].id;
         ProposalJudge storage judge = claimJudges[claimId][judgeId];
 
         if( !(now < claim.deadlineClaimVoting &&
             taskList[claim.proposalId].state == ProposalState.IN_COURT &&
-            judgeId != 0  && 
             judge.decision == JudgeDecision.UNDECIDED) )
         {
             decideClaimResult(false);
             return;
         }
+
+        claim.judgeMapping[msg.sender].exists = false; // not to decide twice
 
         if (isEmployerInFavor) {
             judge.decision = JudgeDecision.EMPLOYER;
@@ -421,14 +448,19 @@ contract Project {
         getMoneyAsEmployeeResult(true);
     }
     
-    function getJudgeId(uint claimId) private constant returns(uint judgeId) {
+    function getJudgeId(uint claimId) private constant returns(bool found, uint judgeId) {
+        Claim storage claim = claimList[claimId];
+
+        found = false;
         for (uint i = 0; i < claimJudges[claimId].length; i++) {
-            if (claimJudges[claimId][i].id == msg.sender) {
-                judgeId = i;
-                return;
+            if( claimJudges[claimId].length > i ) {
+                if( claimJudges[claimId][i].id == msg.sender ) {
+                    judgeId = i;
+                    found = true;
+                    return;
+                }
             }
         }
-        require(false); // not a judge
     }
     
     function deleteJudge(uint claimId, uint judgeId) private {
@@ -452,12 +484,19 @@ contract Project {
     function getMoneyAsJudge(uint claimId) public {
         Claim storage claim = claimList[claimId];
 		finalizeClaim(claimId);
-        uint judgeId = getJudgeId(claimId);
+
+        bool found;
+        uint judgeId;
+        (found, judgeId) = getJudgeId(claimId);
+
+        if(!found) {
+            getMoneyAsJudgeResult(false);
+            return; 
+        }
+
         ProposalJudge storage judge = claimJudges[claimId][judgeId];
 
-        if( !(judgeId != 0 &&
-            (claim.finalDecision != JudgeDecision.UNDECIDED &&
-            claim.finalDecision == judge.decision) ||
+        if( !((claim.finalDecision != JudgeDecision.UNDECIDED && claim.finalDecision == judge.decision) ||
             (claim.noDecision && judge.decision != JudgeDecision.UNDECIDED)) ) // noDecision means that vote deadline expired
         {
             getMoneyAsJudgeResult(false);
@@ -467,15 +506,6 @@ contract Project {
 	    claimJudges[claimId][judgeId].id.transfer(claim.salary / claim.judgeWinnersCount);      
 
         deleteJudge(claimId, judgeId);
-        for (uint i = 0; i < claimJudges[claimId].length; i++) {
-            ProposalJudge storage anotherJudge = claimJudges[claimId][i];
-            if (anotherJudge.deadlineJudgeVoting < now) {
-                deleteJudge(claimId, i);
-            }
-        }
-        if (claimJudges[claimId].length == 0) {
-            deleteClaim(claimId);
-        }
 
         getMoneyAsJudgeResult(true);
     }
