@@ -1,11 +1,14 @@
 watchEvents(function(error, event) {
     console.log(event);
     if (event && event.event === 'getNewClaimResult') {
-        window.location.href = 'task.html?pending=true&pid=' + event.args.proposalId.c[0];
+        window.location.href = 'task.html?pending=true&from=judge&pid=' + event.args.clainId.c[0];
     }
 });
 
 function openCity(evt, cityName) {
+    if (!cityName) {
+        return;
+    }
     // Declare all variables
     var i, tabcontent, tablinks;
 
@@ -28,4 +31,3 @@ function openCity(evt, cityName) {
 }
 
 openCity(null, getFrom());
-

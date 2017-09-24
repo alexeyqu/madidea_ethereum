@@ -4,9 +4,9 @@
     <link rel="stylesheet" type="text/css" href="icoHack.css">
      
     <div class="tab">
-      <button class="tablinks" onclick="window.location='home.html?from=employer'" id="employer">Employer</button>
-      <button class="tablinks" onclick="window.location='home.html?from=employee'" id="employee">Employee</button>
-      <button class="tablinks" onclick="window.location='home.html?from=judge'" id="judge">Judge</button>
+      <button class="tablinks" onclick="window.location.href ='home.html?from=employer'" id="employer">Employer</button>
+      <button class="tablinks" onclick="window.location.href ='home.html?from=employee'" id="employee">Employee</button>
+      <button class="tablinks" onclick="window.location.href ='home.html?from=judge'" id="judge">Judge</button>
     </div>
 
     <div class="tabcontent" style="display: block;">
@@ -14,7 +14,7 @@
       <div class="description-line">Name: <span id="project-name">---</span></div>
       <div class="description-line">Description: <span id="project-description">---</span></div>
       <div class="description-line">Solution: <input id="project-solution" type="text" disabled>
-        <button id="update-solution-button" style:"display: none">Update solution</button>
+        <button id="update-solution-button" style="display: none">Update solution</button>
       </div>
       <hr>
       <div class="description-line">Price: <span id="project-price">0</span></div>
@@ -23,34 +23,35 @@
       <div class="description-line">Time to close a claim elapsed: <span id="project-close=claim-deadline">-</span></div>
       <div class="description-line">Time for judge decision: <span id="project-judge-eadline">-</span></div>
 
+      <div>
+        <button id="claim-button" class="button-form" onclick="window.location.href='post-claim.html?pid=' + proposalId" style="display: none">
+          Open new claim
+        </button>
 
-      <button id="claim-button" class="button-form" onclick="window.location.href='post-claim.html?pid=' + proposalId" style:"display: none">
-        Open new claim
-      </button>
+        <button id="send-money-button" class="button-form" onclick="contract.acceptProposal(proposalId, {from: web3.eth.accounts[0]})" style="display: none">
+          Task is done
+        </button>
 
-      <button id="send-money-button" class="button-form" onclick="contract.acceptProposal(proposalId, {from: web3.eth.accounts[0]})" style:"display: none">
-        Task is done
-      </button>
+        <button id="get-money-button" class="button-form" onclick="getMoney()" style="display: inline-block">
+          Get money
+        </button>
 
-      <button id="get-money-button" class="button-form" onclick="getMoney()">
-        Get money
-      </button>
+        <button id="accept-button" class="button-form" onclick="contract.acceptClaim({from: web3.eth.accounts[0]})" style="display: none">
+          Accept
+        </button>
 
-      <button id="accept-button" class="button-form" onclick="contract.acceptClaim({from: web3.eth.accounts[0]})" style:"display: none">
-        Accept
-      </button>
+        <button id="decline-button" class="button-form" onclick="window.location.href='home.html?from=judge'" style="display: none">
+          Decline
+        </button>
 
-      <button id="decline-button" class="button-form" onclick="window.location.href='home.html?from=judge'" style:"display: none">
-        Decline
-      </button>
+        <button id="employer-right-button" class="button-form" onclick="contract.decideClaim(proposalId, true, {from: web3.eth.accounts[0]})" style="display: none">
+          Vote for Employer
+        </button>
 
-      <button id="employer-right-button" class="button-form" onclick="contract.decideClaim(proposalId, true, {from: web3.eth.accounts[0]})" style:"display: none">
-        Vote for Employer
-      </button>
-
-      <button id="employee-right-button" class="button-form" onclick="contract.decideClaim(proposalId, false, {from: web3.eth.accounts[0]})" style:"display: none">
-        Vote for Employee
-      </button>
+        <button id="employee-right-button" class="button-form" onclick="contract.decideClaim(proposalId, false, {from: web3.eth.accounts[0]})" style="display: none">
+          Vote for Employee
+        </button>
+      </div>
 
     </div>
         

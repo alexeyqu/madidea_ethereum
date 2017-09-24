@@ -23,7 +23,7 @@
 
     <div id="judge-tab" class="tabcontent">
       <p>I want to judge</p>
-      <button class="button-form" onclick="contract.getNewClaim()">Get task</button>
+      <button class="button-form" onclick="contract.getNewClaim({from: web3.eth.accounts[0]})">Get task</button>
       <button class="button-form" onclick="window.location = 'my-tasks.html?from=judge'">My claims</button>
      </div>
 

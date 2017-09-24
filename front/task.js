@@ -6,8 +6,8 @@ watchEvents(function(error, event) {
     if (event.event === 'acceptClaim') {
         document.getElementById('accept-button').style.display = 'none';
         document.getElementById('decline-button').style.display = 'none';
-        document.getElementById('employer-right-button').style.display = 'block';
-        document.getElementById('employee-right-button').style.display = 'block';
+        document.getElementById('employer-right-button').style.display = 'inline-block';
+        document.getElementById('employee-right-button').style.display = 'inline-block';
     }
 });
 
@@ -39,24 +39,26 @@ var getMoney = function() {
 }
 
 if (role === 'employer') {
-    if (secondsToWorkDeadline < 0 && secondsToOpenClaim > 0) {
-        document.getElementById('claim-button').style.display = 'block';
+    console.log(secondsToWorkDeadline);
+    if (secondsToWorkDeadline <= 0 && secondsToOpenClaim > 0) {
+        console.log('aaaa');
+        document.getElementById('claim-button').style.display = 'inline-block';
     }
     if (secondsToOpenClaim > 0) {
-        document.getElementById('send-money-button').style.display = 'block';
+        document.getElementById('send-money-button').style.display = 'inline-block';
     }
 } else if (role === 'employee') {
-    document.getElementById('project-solution').disabled = false;
     if (secondsToWorkDeadline > 0) {
-        document.getElementById('update-solution-button').style.display = 'block';
+        document.getElementById('project-solution').disabled = false;
+        document.getElementById('update-solution-button').style.display = 'inline-block';
     }
-    document.getElementById('get-money-button').style.display = 'block';
+    document.getElementById('get-money-button').style.display = 'inline-block';
 } else if (role === 'judge') {
   if (getParam('pending')) {
-    document.getElementById('accept-button').style.display = 'block';
-    document.getElementById('decline-button').style.display = 'block';
+    document.getElementById('accept-button').style.display = 'inline-block';
+    document.getElementById('decline-button').style.display = 'inline-block';
   } else {
-    document.getElementById('employer-right-button').style.display = 'block';
-    document.getElementById('employee-right-button').style.display = 'block';
+    document.getElementById('employer-right-button').style.display = 'inline-block';
+    document.getElementById('employee-right-button').style.display = 'inline-block';
   }
 }

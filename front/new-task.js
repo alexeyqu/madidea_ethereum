@@ -6,7 +6,7 @@ watchEvents(function(error, event) {
     }
     if (event.event === 'createProposalResult') {
         console.log(event);
-        window.location.href = 'task.html?pid=' + event.args.proposalId.c[0];
+        window.location.href = 'task.html?from=employer&pid=' + event.args.proposalId.c[0];
     }
 });
 
