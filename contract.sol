@@ -186,8 +186,7 @@ contract Project {
     event openClaimResult(bool success, uint claimId);
 
     function openClaim(uint _proposalId, 
-        string _message,
-        uint _deadlineVoting) public payable
+        string _message) public payable
     {
         Proposal memory proposal = taskList[_proposalId];
 
@@ -202,7 +201,7 @@ contract Project {
             proposalId: _proposalId,
             message: _message,
             salary: msg.value,
-            deadlineClaimVoting: now + _deadlineVoting,
+            deadlineClaimVoting: now + proposal.daysForIndividualVote * 1 days,
             finalDecision: JudgeDecision.UNDECIDED,
             noDecision: false,
             judgeWinnersCount: 0
@@ -246,7 +245,7 @@ contract Project {
         uint randomOpenClaimIdOfId = 0; // todo - fix this shit
         uint claimId = openClaimIds[randomOpenClaimIdOfId];
         judgePendingClaimId[msg.sender] = claimId;
-        getNewClaimResult(true, claimId);
+        getNewClaimResult(true, claimList[claimId].proposalId);
     }
 
 
@@ -352,7 +351,14 @@ contract Project {
 
     event decideClaimResult(bool success);
 
-    function decideClaim(uint claimId, bool isEmployerInFavor) public {
+    function decideClaim(uint proposalId, bool isEmployerInFavor) public {
+        uint claimId;
+        for (uint i = 0; i < claimList.length; i++) {
+            if (claimList[i].proposalId == proposalId) {
+                claimId = i;
+                break;
+            }
+        }
         Claim storage claim = claimList[claimId];
 
         if(!claim.judgeMapping[msg.sender].exists) {
