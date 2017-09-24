@@ -1,17 +1,18 @@
 pragma solidity ^0.4.17;
 contract Project {
 
-    // function Project() public {
-    //     claimList.push(Claim({
-    //         proposalId: 0,
-    //         message: "",
-    //         salary: 0,
-    //         deadlineClaimVoting: 0,
-    //         finalDecision: 0,
-    //         noDecision: false,
-    //         judgeWinnersCount: 0
-    //     });
-    // }
+    function Project() public {
+        claimList.push(Claim({
+            proposalId: 0,
+            message: "",
+            salary: 0,
+            deadlineClaimVoting: 0,
+            finalDecision: JudgeDecision.UNDECIDED,
+            noDecision: false,
+            judgeWinnersCount: 0
+        }));
+        openClaimIds.push(0);
+    }
 
     uint8 constant MIN_JUDGES = 7;
     uint totalEmployeeWins = 0;
@@ -353,7 +354,7 @@ contract Project {
 
     function decideClaim(uint proposalId, bool isEmployerInFavor) public {
         uint claimId;
-        for (uint i = 0; i < claimList.length; i++) {
+        for (uint i = 1; i < claimList.length; i++) {
             if (claimList[i].proposalId == proposalId) {
                 claimId = i;
                 break;
@@ -392,7 +393,7 @@ contract Project {
         uint claimId = 0;
         bool found = false;
 
-        for (uint i = 0; i < claimList.length; i++) {
+        for (uint i = 1; i < claimList.length; i++) {
             if( claimList[i].proposalId == proposalId ) {
                 found = true;
                 claimId = i;
@@ -554,7 +555,7 @@ contract Project {
 
     function getProposalsLengthForJudge(address _judge) constant public returns (uint length) {
         length = 0;
-        for (uint i = 0; i < claimList.length; i++) {
+        for (uint i = 1; i < claimList.length; i++) {
             uint proposalId = claimList[i].proposalId;
             string storage proposalName = taskList[proposalId].name;
 
@@ -567,7 +568,7 @@ contract Project {
     }
 
     function getProposalForJudge(address _judge, uint idx) constant public returns (uint proposalId, string name) {
-        for (uint i = 0; i < claimList.length; i++) {
+        for (uint i = 1; i < claimList.length; i++) {
             proposalId = claimList[i].proposalId;
             string storage proposalName = taskList[proposalId].name;
 
