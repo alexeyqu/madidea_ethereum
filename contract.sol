@@ -18,6 +18,7 @@ contract Project {
     uint totalEmployeeWins = 0;
     uint totalEmployerWins = 0;
     uint totalClaims = 0;
+    uint seed = 0;
     
     enum ProposalState { 
         IN_WORK,
@@ -178,10 +179,11 @@ contract Project {
     }
     
     function addClaimInOpenList(uint claimId) private {
-        if( claimIdToOpenClaimId[claimId] == 0 ) {
+        if( claimIdToOpenClaimId[claimId] != 0 ) {
             return;
         }
 		finalizeClaim(claimId);
+        openClaimIds.push(claimId);
         claimIdToOpenClaimId[claimId] = openClaimIds.length - 1;
     }
     
@@ -243,7 +245,8 @@ contract Project {
 
     function getNewClaim() public {
         kickUpClaims();
-        uint randomOpenClaimIdOfId = 0; // todo - fix this shit
+        seed++;
+        uint randomOpenClaimIdOfId = uint(seed) % (openClaimIds.length - 1) + 1;
 		uint claimId = openClaimIds[randomOpenClaimIdOfId];
         judgePendingClaimId[msg.sender] = claimId;
         getNewClaimResult(true, claimList[claimId].proposalId);
