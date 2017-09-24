@@ -181,6 +181,7 @@ contract Project {
         if( claimIdToOpenClaimId[claimId] == 0 ) {
             return;
         }
+		finalizeClaim(claimId);
         claimIdToOpenClaimId[claimId] = openClaimIds.length - 1;
     }
     
@@ -222,7 +223,6 @@ contract Project {
     
     function kickUpClaims() private {
         for (uint i = 0; i < claimList.length; i++) {
-            Claim storage claim = claimList[i];
             bool kickedUp = false;
             uint deleteOffset = 0;
             for (uint j = 0; j - deleteOffset < claimJudges[i].length; j++) {
@@ -244,7 +244,7 @@ contract Project {
     function getNewClaim() public {
         kickUpClaims();
         uint randomOpenClaimIdOfId = 0; // todo - fix this shit
-        uint claimId = openClaimIds[randomOpenClaimIdOfId];
+		uint claimId = openClaimIds[randomOpenClaimIdOfId];
         judgePendingClaimId[msg.sender] = claimId;
         getNewClaimResult(true, claimList[claimId].proposalId);
     }
@@ -267,6 +267,7 @@ contract Project {
         judgePendingClaimId[msg.sender] = 0;
 
         Claim storage claim = claimList[claimId];
+		finalizeClaim(claimId);
         Proposal storage proposal = taskList[claim.proposalId];
 
         claimJudges[claimId].push(ProposalJudge({
@@ -288,7 +289,7 @@ contract Project {
 
     
     function updateJudgesList(uint claimId) private {
-        Claim storage claim = claimList[claimId];
+		finalizeClaim(claimId);
         uint8 currentIndex = 0;
         for (uint i = 0; i < claimJudges[claimId].length; i++) {
             if (claimJudges[claimId][i].decision != JudgeDecision.UNDECIDED &&
@@ -361,7 +362,8 @@ contract Project {
             }
         }
         Claim storage claim = claimList[claimId];
-
+		finalizeClaim(claimId);
+		
         if(!claim.judgeMapping[msg.sender].exists) {
             decideClaimResult(false);
             return;
@@ -405,6 +407,7 @@ contract Project {
             return;
         }
 
+		finalizeClaim(claimId);
         decideClaim(claimId, isEmployerInFavor);
     }
     
@@ -481,6 +484,7 @@ contract Project {
 
     function getMoneyAsJudge(uint claimId) public {
         Claim storage claim = claimList[claimId];
+		finalizeClaim(claimId);
 
         bool found;
         uint judgeId;
@@ -557,8 +561,6 @@ contract Project {
         length = 0;
         for (uint i = 1; i < claimList.length; i++) {
             uint proposalId = claimList[i].proposalId;
-            string storage proposalName = taskList[proposalId].name;
-
             for (uint j = 0; j < claimJudges[i].length; j++) {
                 if( claimJudges[i][j].id == _judge ) {
                     length++;
@@ -584,4 +586,3 @@ contract Project {
         }
     }
 }
-
