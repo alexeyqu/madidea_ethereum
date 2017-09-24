@@ -2,7 +2,9 @@ pragma solidity ^0.4.17;
 contract Project {
 
     // function Project() public {
-    //     claimList.push(Claim());
+    //     claimList.push(Claim({
+
+    //     }));
     // }
 
     uint8 constant MIN_JUDGES = 7;
@@ -36,6 +38,23 @@ contract Project {
         uint claimId;
 
         bool paid;
+    }
+
+    function getProposalData(uint proposalId) constant public returns(string name, address employer,
+        address employee, string taskDescription, uint price, string taskSolution,
+        uint deadlineWorkDate, uint deadLineClaimDate)
+    {
+        Proposal storage proposal = taskList[proposalId];
+        return (
+            proposal.name,
+            proposal.employer,
+            proposal.employee,
+            proposal.taskDescription,
+            proposal.price,
+            proposal.taskSolution,
+            proposal.deadlineWorkDate - now,
+            proposal.deadlineClaimDate - now
+        );
     }
     
     Proposal[] taskList;
@@ -411,7 +430,6 @@ contract Project {
     }
     
     function deleteJudge(uint claimId, uint judgeId) private {
-        Claim storage claim = claimList[claimId];
         delete claimJudges[claimId][judgeId];
         for (uint i = judgeId; i < claimJudges[claimId].length - 1; i++) {
             claimJudges[claimId][i] = claimJudges[claimId][i + 1];
@@ -514,7 +532,6 @@ contract Project {
             for (uint j = 0; j < claimJudges[i].length; j++) {
                 if( claimJudges[i][j].id == _judge ) {
                     length++;
-                    //getAllProposalsForJudgeResult(true, proposalId, proposalName);
                 }
             }
         }
