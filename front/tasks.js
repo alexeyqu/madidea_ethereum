@@ -8,17 +8,17 @@ contract.allEvents().watch(function(error, event) {
         var proposals = document.getElementByClassName('proposal');
         proposal[proposal.length - 1].onclick = function() {
             window.location.href = 'task.html?pid=' + proposal[proposal.length - 1].dataset.id + '&from=' + getFrom();
-        }   
+        }
     }
 }
 
 var role = getFrom();
 if (role === 'employer') {
-    contract.getProposalsForEmployer(web3.eth.accounts[0]);
+    contract.getAllProposalsForEmployer(web3.eth.accounts[0]);
 else if (role === 'employee') {
-    contract.getProposalsForEmployee(web3.eth.accounts[0]);
+    contract.getAllProposalsForEmployee(web3.eth.accounts[0]);
 else if (role === 'judge') {
-    contract.getProposalsForJudge(web3.eth.accounts[0]);
+    contract.getAllProposalsForJudge(web3.eth.accounts[0]);
 }
 
 
