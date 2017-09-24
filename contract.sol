@@ -214,7 +214,6 @@ contract Project {
 
         claimList.push(newClaim);
         uint claimId = claimList.length - 1;
-        addClaimInOpenList(claimId);
 
         openClaimResult(true, claimId);
     }
@@ -227,6 +226,10 @@ contract Project {
         for (uint i = 0; i < claimList.length; i++) {
             bool kickedUp = false;
             uint deleteOffset = 0;
+            Proposal storage proposal = taskList[claimList[i].proposalId];
+            if (proposal.numJudges != claimJudges[i].length) {
+                kickedUp = true;
+            }
             for (uint j = 0; j - deleteOffset < claimJudges[i].length; j++) {
                 ProposalJudge storage judge = claimJudges[i][j - deleteOffset];
                 if (judge.deadlineJudgeVoting < now) {
