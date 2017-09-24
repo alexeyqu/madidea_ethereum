@@ -18,7 +18,8 @@ contract Project {
         uint _value
     );
 
-
+    event ProposalCreated(uint proposalId);
+    
     struct Proposal {
         address employer;
         address employee;
@@ -61,7 +62,6 @@ contract Project {
         uint salary;
         uint deadlineClaimVoting; // how do we manage that?
         mapping( address => uint ) judgeMapping;
- //       ProposalJudge[] judges;
         JudgeDecision finalDecision;
         uint judgeWinnersCount;
         bool noDecision;
@@ -91,7 +91,7 @@ contract Project {
         uint daysToDeadline, 
         uint daysToClaimDeadline,
         uint daysToVoteDeadline,
-        address _employee) public payable returns (uint proposalId)
+        address _employee) public payable
         {
             Proposal memory newProposal = Proposal({
                 employer: msg.sender,
@@ -109,7 +109,7 @@ contract Project {
             });
             
             taskList.push(newProposal);
-            return taskList.length - 1;
+            ProposalCreated(taskList.length - 1);
         }
     
     function updateSolution(uint proposalId, string _taskSolution) public {
@@ -136,40 +136,31 @@ contract Project {
         claimIdToOpenClaimId[claimId] = openClaimIds.length - 1;
     }
     
+    event ClaimOpened(uint claimId);
+
     function openClaim(uint _proposalId, 
         string _message,
-        uint _deadlineVoting) public payable returns (uint claimId) 
+        uint _deadlineVoting) public payable
     {
         Proposal memory proposal = taskList[_proposalId];
-        if (msg.sender == proposal.employer &&
-            now < proposal.deadlineClaimDate &&
-            now > proposal.deadlineWorkDate &&
-            proposal.state == ProposalState.IN_WORK) 
-        {
-        /*    ProposalJudge memory proposalJudge = ProposalJudge({
-                    id: 0,
-                    pendingClaimId: 0,
-                    decision: JudgeDecision.UNDECIDED,
-                    deadlineJudgeVoting: 0});*/
-            claimJudges[claimId].length = 0;
-           // claimJudges[claimId].push(proposalJudge);
-                    
-            Claim memory newClaim = Claim({
-                proposalId: _proposalId,
-                message: _message,
-                salary: msg.value,
-           //     judges: claimJudges,
-                deadlineClaimVoting: now + _deadlineVoting,
-                finalDecision: JudgeDecision.UNDECIDED,
-                noDecision: false,
-                judgeWinnersCount: 0
-            });
-            taskList[_proposalId].state = ProposalState.IN_COURT;
+        require(msg.sender == proposal.employer && now < proposal.deadlineClaimDate &&
+            now > proposal.deadlineWorkDate && proposal.state == ProposalState.IN_WORK);
 
-            claimList.push(newClaim);
-            claimId = claimList.length - 1;
-            addClaimInOpenList(claimId);
-        }
+        Claim memory newClaim = Claim({
+            proposalId: _proposalId,
+            message: _message,
+            salary: msg.value,
+            deadlineClaimVoting: now + _deadlineVoting,
+            finalDecision: JudgeDecision.UNDECIDED,
+            noDecision: false,
+            judgeWinnersCount: 0
+        });
+        taskList[_proposalId].state = ProposalState.IN_COURT;
+
+        claimList.push(newClaim);
+        uint claimId = claimList.length - 1;
+        addClaimInOpenList(claimId);
+        ClaimOpened(claimId);
     }
     
     //==========================================================================
@@ -177,9 +168,7 @@ contract Project {
     //==========================================================================
     
     function payJudgementFee(uint claimId) public payable {
-        if (judgePayment[msg.sender]) {
-            return;
-        }
+        require(!judgePayment[msg.sender]);
         
         uint amount = 1 * calculateFeeMultiplier(); // todo: calculate wisely
         require(msg.value == amount);
@@ -220,9 +209,8 @@ contract Project {
         require(msg.value == amount);
 
         uint claimId = judgePendingClaimId[msg.sender];
-        if (claimId == 0) {
-            return;
-        }
+        require(claimId != 0);
+
         judgePayment[msg.sender] = false;
         Claim storage claim = claimList[claimId];
         claimJudges[claimId].push(ProposalJudge({
@@ -304,16 +292,16 @@ contract Project {
         Claim storage claim = claimList[claimId];
         uint judgeId = claim.judgeMapping[msg.sender];
         ProposalJudge storage judge = claimJudges[claimId][judgeId];
-        if (now < claim.deadlineClaimVoting &&
+
+        require(now < claim.deadlineClaimVoting &&
             taskList[claim.proposalId].state == ProposalState.IN_COURT &&
             judgeId != 0  && 
-            judge.decision == JudgeDecision.UNDECIDED ) 
-        {
-            if (isEmployerInFavor) {
-                judge.decision = JudgeDecision.EMPLOYER;
-            } else {
-                judge.decision = JudgeDecision.EMPLOYEE;
-            }
+            judge.decision == JudgeDecision.UNDECIDED);
+
+        if (isEmployerInFavor) {
+            judge.decision = JudgeDecision.EMPLOYER;
+        } else {
+            judge.decision = JudgeDecision.EMPLOYEE;
         }
     }
     
@@ -323,20 +311,18 @@ contract Project {
     
     function getMoneyAsEmployer(uint proposalId) public {
         Proposal storage proposal = taskList[proposalId];
-        if (proposal.state == ProposalState.PAY_EMPLOYER &&
-            msg.sender == proposal.employer) {
-            msg.sender.transfer(proposal.price);
-            delete taskList[proposalId];
-        }
+        require(proposal.state == ProposalState.PAY_EMPLOYER && msg.sender == proposal.employer);
+
+        msg.sender.transfer(proposal.price);
+        delete taskList[proposalId];
     }
     
     function getMoneyAsEmployee(uint proposalId) public {
         Proposal storage proposal = taskList[proposalId];
-        if (proposal.state == ProposalState.PAY_EMPLOYEE &&
-            msg.sender == proposal.employee) {
-            msg.sender.transfer(proposal.price);
-            delete taskList[proposalId];
-        }
+        require(proposal.state == ProposalState.PAY_EMPLOYEE && msg.sender == proposal.employee);
+        
+        msg.sender.transfer(proposal.price);
+        delete taskList[proposalId];
     }
     
     function getJudgeId(uint claimId) private constant returns(uint judgeId) {
@@ -371,23 +357,23 @@ contract Project {
         Claim storage claim = claimList[claimId];
         uint judgeId = getJudgeId(claimId);
         ProposalJudge storage judge = claimJudges[claimId][judgeId];
-        if (judgeId != 0 &&
+
+        require(judgeId != 0 &&
             (claim.finalDecision != JudgeDecision.UNDECIDED &&
             claim.finalDecision == judge.decision) ||
-            (claim.noDecision && judge.decision != JudgeDecision.UNDECIDED)) 
-        {
+            (claim.noDecision && judge.decision != JudgeDecision.UNDECIDED));
+
 	    claimJudges[claimId][judgeId].id.transfer(claim.salary / claim.judgeWinnersCount);      
 
-            deleteJudge(claimId, judgeId);
-            for (uint i = 0; i < claimJudges[claimId].length; i++) {
-                ProposalJudge storage anotherJudge = claimJudges[claimId][i];
-                if (anotherJudge.deadlineJudgeVoting < now) {
-                    deleteJudge(claimId, i);
-                }
+        deleteJudge(claimId, judgeId);
+        for (uint i = 0; i < claimJudges[claimId].length; i++) {
+            ProposalJudge storage anotherJudge = claimJudges[claimId][i];
+            if (anotherJudge.deadlineJudgeVoting < now) {
+                deleteJudge(claimId, i);
             }
-            if (claimJudges[claimId].length == 0) {
-                deleteClaim(claimId);
-            }
+        }
+        if (claimJudges[claimId].length == 0) {
+            deleteClaim(claimId);
         }
     }
 }
