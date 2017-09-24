@@ -11,46 +11,46 @@
 
     <div class="tabcontent" style="display: block;">
       <h2>Task info</h2>
-      <div id="project-name" class="description-line">Name: <span>name</span></div>
-      <div id="project-description" class="description-line">Description: <span>descr</span></div>
-      <div id="project-solution" class="description-line">Solution: <input type="text" class="disabled">
-        <button id="update-solution-button">Update solution</button>
+      <div class="description-line">Name: <span id="project-name">---</span></div>
+      <div class="description-line">Description: <span id="project-description">---</span></div>
+      <div class="description-line">Solution: <input id="project-solution" type="text" disabled>
+        <button id="update-solution-button" style:"display: none">Update solution</button>
       </div>
       <hr>
-      <div id="project-price" class="description-line">Price: <span>100000000000</span>ETH</div>
-      <div id="project-work-deadline" class="description-line">Time to work elapsed: <span>5</span>days</div>
-      <div id="project-open-claim-deadline" class="description-line">Time to open a claim elapsed: <span>open</span></div>
-      <div id="project-close=claim-deadline" class="description-line">Time to close a claim elapsed: <span>close</span></div>
-      <div id="project-judge-eadline" class="description-line">Time for judge decision: <span>5</span>days</div>
+      <div class="description-line">Price: <span id="project-price">0</span></div>
+      <div class="description-line">Time to work elapsed: <span id="project-work-deadline">-</span></div>
+      <div class="description-line">Time to open a claim elapsed: <span id="project-open-claim-deadline">-</span></div>
+      <div class="description-line">Time to close a claim elapsed: <span id="project-close=claim-deadline">-</span></div>
+      <div class="description-line">Time for judge decision: <span id="project-judge-eadline">-</span></div>
 
 
-      <form id="claim-button" class="button-form">
-        <button>Open new claim</button>
-      </form>
+      <button id="claim-button" class="button-form" onclick="window.location.href='post-claim.html'" style:"display: none">
+        Open new claim
+      </button>
 
-      <form id="send-money-button" class="button-form">
-        <button>Task is done</button>
-      </form>
+      <button id="send-money-button" class="button-form" style:"display: none">
+        Task is done
+      </button>
 
-      <form id="get-money-button" class="button-form">
-        <button>Get money</button>
-      </form>
+      <button id="get-money-button" class="button-form">
+        Get money
+      </button>
 
-      <form id="accept-button" class="button-form">
-        <button>Accept</button>
-      </form>
+      <button id="accept-button" class="button-form" onclick="contract.acceptClaim({from: web3.eth.accounts[0]})" style:"display: none">
+        Accept
+      </button>
 
-      <form id="decline-button" class="button-form">
-        <button>Decline</button>
-      </form>
+      <button id="decline-button" class="button-form" onclick="window.location.href='home.html?from=judge'" style:"display: none">
+        Decline
+      </button>
 
-      <form id="employer-right-button" class="button-form">
-        <button>Employer</button>
-      </form>
+      <button id="employer-right-button" class="button-form" onclick="contract.decideClaim(proposalId, true, {from: web3.eth.accounts[0]})" style:"display: none">
+        Vote for Employer
+      </button>
 
-      <form id="employee-right-button" class="button-form">
-        <button>Employee</button>
-      </form>
+      <button id="employee-right-button" class="button-form" onclick="contract.decideClaim(proposalId, false, {from: web3.eth.accounts[0]})" style:"display: none">
+        Vote for Employee
+      </button>
 
     </div>
         

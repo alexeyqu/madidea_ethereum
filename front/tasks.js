@@ -1,26 +1,23 @@
-watchEvents(function(error, event) {
-    if (error) {
-        console.log(error);
-    }
-    console.log(event);
-    if (event.event.startsWith('getAllProposalsFor')) {
-        document.getElementById('task-list').innerHTML += '<div class="description-line proposal" data-id="' + event.proposalId.c[0] + '">'
-            + event.proposalName + '</div>' 
-        var proposals = document.getElementByClassName('proposal');
-        proposal[proposal.length - 1].onclick = function() {
-            window.location.href = 'task.html?pid=' + proposal[proposal.length - 1].dataset.id + '&from=' + getFrom();
+var getAllProposals = function(getProposalsLength, getProposal, address) {
+    var length = getProposalsLength(address);
+    for (var i = 0; i < length; ++i) {
+        var proposal = getProposal(address, i);
+        console.log(proposal);
+        document.getElementById('task-list').innerHTML += '<div class="button-form proposal">'
+            + proposal[1] + '</div>'
+        var proposals = document.getElementsByClassName('proposal');
+        proposals[proposals.length - 1].onclick = function() {
+            window.location.href = 'task.html?pid=' + proposal[0] + '&from=' + getFrom();
         }
     }
-});
+};
 
 var role = getFrom();
 if (role === 'employer') {
-    contract.getAllProposalsForEmployer(web3.eth.accounts[0]);
+    getAllProposals(contract.getProposalsLengthForEmployer, contract.getProposalForEmployer, web3.eth.accounts[0]);
 } else if (role === 'employee') {
-    contract.getAllProposalsForEmployee(web3.eth.accounts[0]);
+    var length = contract.getProposalsLengthForEmployee(web3.eth.accounts[0]);
 } else if (role === 'judge') {
-    contract.getAllProposalsForJudge(web3.eth.accounts[0]);
+    var length = contract.getProposalsLengthForJudge(web3.eth.accounts[0]);
 }
 
-
-document.getElementsByClassName('proposal');

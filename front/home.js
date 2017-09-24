@@ -1,12 +1,9 @@
-function getFrom(url) {
-    
-    if (!url) url = window.location.search;
-    var regex = new RegExp("[?&]" + "from" + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return results[2];
-}
+watchEvents(function(error, event) {
+    console.log(event);
+    if (event && event.event === 'getNewClaimResult') {
+        window.location.href = 'task.html?pending=true&pid=' + event.args.proposalId.c[0];
+    }
+});
 
 function openCity(evt, cityName) {
     // Declare all variables
@@ -28,7 +25,6 @@ function openCity(evt, cityName) {
     console.log(cityName);
     document.getElementById(cityName + '-tab').style.display = "block";
     document.getElementById(cityName).className += " active";
-
 }
 
 openCity(null, getFrom());

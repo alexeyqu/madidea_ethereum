@@ -21,5 +21,5 @@ document.getElementById('create-task').onclick = function() {
         document.getElementsByName('judge-deadline')[0].value,
         document.getElementsByName('judge-decision-deadline')[0].value,
         document.getElementsByName('employee')[0].value,
-        {'from' : web3.eth.accounts[0]});
+        {'from' : web3.eth.accounts[0], 'value' :  document.getElementsByName('price')[0].value });
 };
