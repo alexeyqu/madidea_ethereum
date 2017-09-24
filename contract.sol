@@ -456,11 +456,40 @@ contract Project {
 
     /* Getters */
 
-    event getAllClaimsResult(bool success, uint claimId);
+    event getAllProposalsForEmployeeResult(bool success, uint proposalId, string proposalName);
 
-    function getAllClaims() public {
+    function getAllProposalsForEmployee(address _employee) public {
+        for (uint i = 0; i < taskList.length; i++) {
+            Proposal storage proposal = taskList[i];
+            if( proposal.employee == _employee ) {
+                getAllProposalsForEmployeeResult(true, i, proposal.name);
+            }
+        }
+    }
+
+    event getAllProposalsForEmployerResult(bool success, uint proposalId, string proposalName);
+
+    function getAllProposalsForEmployer(address _employer) public {
+        for (uint i = 0; i < taskList.length; i++) {
+            Proposal storage proposal = taskList[i];
+            if( proposal.employer == _employer ) {
+                getAllProposalsForEmployerResult(true, i, proposal.name);
+            }
+        }
+    }
+
+    event getAllProposalsForJudgeResult(bool success, uint proposalId, string proposalName);
+
+    function getAllProposalsForJudge(address _judge) public {
         for (uint i = 0; i < claimList.length; i++) {
-            getAllClaimsResult(true, i);
+            uint proposalId = claimList[i].proposalId;
+            string storage proposalName = taskList[proposalId].name;
+
+            for (uint j = 0; j < claimJudges[i].length; j++) {
+                if( claimJudges[i][j].id == _judge ) {
+                    getAllProposalsForJudgeResult(true, proposalId, proposalName);
+                }
+            }
         }
     }
 }
