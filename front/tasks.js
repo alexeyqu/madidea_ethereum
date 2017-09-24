@@ -1,5 +1,8 @@
 var getAllProposals = function(getProposalsLength, getProposal, address) {
     var length = getProposalsLength(address);
+    if (length > ) {
+        document.getElementById('task-list').innerHTML = '';
+    }
     for (var i = 0; i < length; ++i) {
         var proposal = getProposal(address, i);
         console.log(proposal);

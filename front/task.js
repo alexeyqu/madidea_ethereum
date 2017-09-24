@@ -3,7 +3,7 @@ watchEvents(function(error, event) {
         console.log(error);
     }
     console.log(event);
-    if (event.event === 'acceptClaim') {
+    if (event.event === 'acceptClaimResult') {
         document.getElementById('accept-button').style.display = 'none';
         document.getElementById('decline-button').style.display = 'none';
         document.getElementById('employer-right-button').style.display = 'inline-block';
@@ -54,7 +54,7 @@ if (role === 'employer') {
     }
     document.getElementById('get-money-button').style.display = 'inline-block';
 } else if (role === 'judge') {
-  if (getParam('pending')) {
+  if (getParam(null, 'pending')) {
     document.getElementById('accept-button').style.display = 'inline-block';
     document.getElementById('decline-button').style.display = 'inline-block';
   } else {

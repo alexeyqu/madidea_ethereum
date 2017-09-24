@@ -2,7 +2,7 @@ var abi = [{"constant":false,"inputs":[],"name":"acceptClaim","outputs":[],"paya
 var Web3 = require('web3');
 var web3 = new Web3();
 web3.setProvider(new web3.providers.HttpProvider('http://127.0.0.1:8545'));
-var contract = web3.eth.contract(abi).at('0x1ffB8accd6d248f36bD2Fa56821C76b42dEF7B5D');
+var contract = web3.eth.contract(abi).at('0x55E9D99646A3fd56375fCA795FD2db5510A990e1');
 
 function getParam(url, param) {
     if (!url) url = window.location.search;

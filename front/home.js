@@ -1,7 +1,11 @@
 watchEvents(function(error, event) {
     console.log(event);
     if (event && event.event === 'getNewClaimResult') {
-        window.location.href = 'task.html?pending=true&from=judge&pid=' + event.args.clainId.c[0];
+        if (event.args.success) {
+            window.location.href = 'task.html?pending=true&from=judge&pid=' + event.args.clainId.c[0];
+        } else {
+            document.getElementById('judge-text').innerHTML = 'There is no appropriate claim for you';
+        }
     }
 });
 
