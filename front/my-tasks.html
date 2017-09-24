@@ -4,22 +4,14 @@
     <link rel="stylesheet" type="text/css" href="icoHack.css">
      
     <div class="tab">
-      <button class="tablinks" onclick="openCity(event, 'employer')" id='employer'>Employer</button>
-      <button class="tablinks" onclick="window.location='home.html'" id>Employee</button>
-      <button class="tablinks" onclick="window.location='home.html'">Judge</button>
+      <button class="tablinks" onclick="window.location.href='home.html?from=employer'" id="employer">Employer</button>
+      <button class="tablinks" onclick="window.location='home.html?from=employee'" id="employee">Employee</button>
+      <button class="tablinks" onclick="window.location='home.html?from=judge'" id="judge">Judge</button>
     </div> 
 
     <div id="employer" class="tabcontent">
       <h2>My tasks</h2>
-      <form action="task.html" method="get">
-        <select class="select" name="Projects">
-          <option value="project1">project1</option>
-          <option value="project2">project2</option>
-          <option value="project3">project3</option>
-          <option value="project4">project4</option>
-          <input type="submit">
-        </select>
-      </form>
+      <div id="task-list"></div>
     </div>
 
     <div>
@@ -29,6 +21,7 @@
     </div>
         
     <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
-    <script src="tasks.js"></script>
+    <script src="utils.js"></script>
+    <script src="tasks.js" defer></script>
   </body>
-</html>                              
+</html>   

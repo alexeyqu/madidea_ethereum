@@ -1,8 +1,10 @@
-contract.allEvents().watch(function(error, event) {
+watchEvents(function(error, event) {
+    console.log(event);
     if (error) {
         console.log(error);
+        return;
     }
-    if (event.event === 'ProposalCreated') {
+    if (event.event === 'createProposalResult') {
         console.log(event);
         window.location.href = 'task.html?pid=' + event.args.proposalId.c[0];
     }
