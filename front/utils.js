@@ -4,11 +4,21 @@ var Web3 = require('web3');
 var web3 = new Web3();
 var contract = web3.eth.contract(abi).at('0x440ab529708ce0aF5bb3a4d77cfd270BEED701C5');
 
-function getFrom(url) {
+function getParam(url, param) {
     if (!url) url = window.location.search;
-    var regex = new RegExp("[?&]" + "from" + "(=([^&#]*)|&|#|$)"),
+    var regex = new RegExp("[?&]" + param + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
     return results[2];
 }
+
+function getFrom(url) {
+    getParam(url, "from");
+}
+
+function getProjectId(url) {
+    getParam(url, "pid");
+}
+
+
