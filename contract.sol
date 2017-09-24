@@ -29,6 +29,8 @@ contract Project {
         uint daysForIndividualVote;
         uint minRating;
         uint claimId;
+
+        bool paid;
     }
     
     Proposal[] taskList;
@@ -107,7 +109,8 @@ contract Project {
                 deadlineVoteDate: now + daysToVoteDeadline * 1 days,
                 daysForIndividualVote: _daysForIndividualVote,
                 minRating: 0,
-                claimId: 0
+                claimId: 0,
+                paid: false
             });
             
             taskList.push(newProposal);
@@ -386,12 +389,13 @@ contract Project {
     function getMoneyAsEmployer(uint proposalId) public {
         Proposal storage proposal = taskList[proposalId];
 
-        if(!(proposal.state == ProposalState.PAY_EMPLOYER && msg.sender == proposal.employer)) {
+        if(!(proposal.state == ProposalState.PAY_EMPLOYER && msg.sender == proposal.employer && proposal.paid == false)) {
             getMoneyAsEmployerResult(false);
             return;
         }
 
         msg.sender.transfer(proposal.price);
+        taskList[proposalId].paid = true;
         // delete taskList[proposalId];
 
         getMoneyAsEmployerResult(true);
@@ -402,12 +406,13 @@ contract Project {
     function getMoneyAsEmployee(uint proposalId) public {
         Proposal storage proposal = taskList[proposalId];
 
-        if(!(proposal.state == ProposalState.PAY_EMPLOYEE && msg.sender == proposal.employee)) {
+        if(!(proposal.state == ProposalState.PAY_EMPLOYEE && msg.sender == proposal.employee && proposal.paid == false)) {
             getMoneyAsEmployeeResult(false);
             return;
         }
 
         msg.sender.transfer(proposal.price);
+        taskList[proposalId].paid = true;
         // delete taskList[proposalId];
 
         getMoneyAsEmployeeResult(true);
@@ -451,7 +456,7 @@ contract Project {
         if( !(judgeId != 0 &&
             (claim.finalDecision != JudgeDecision.UNDECIDED &&
             claim.finalDecision == judge.decision) ||
-            (claim.noDecision && judge.decision != JudgeDecision.UNDECIDED)) )
+            (claim.noDecision && judge.decision != JudgeDecision.UNDECIDED)) ) // noDecision means that vote deadline expired
         {
             getMoneyAsJudgeResult(false);
             return;
