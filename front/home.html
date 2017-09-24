@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <link rel="stylesheet" type="text/css" href="icoHack.css">
+     
+    <div class="tab">
+      <button class="tablinks" onclick="openCity(event, 'employer')" id="employer">Employer</button>
+      <button class="tablinks"  onclick="openCity(event, 'employee')" id="employee">Employee</button>
+      <button class="tablinks"  onclick="openCity(event, 'judge')" id="judge">Judge</button>
+    </div>
+
+    <div id="employer-tab" class="tabcontent">
+      <p>I want to create task</p>
+
+      <button class="button-form" onclick="window.location = 'new-task.html?from=employer'">New task</button>
+      <button class="button-form" onclick="window.location = 'my-tasks.html?from=employer'">My tasks</button>
+    </div>
+
+    <div id="employee-tab" class="tabcontent">
+      <p>I want to work</p> 
+      <button class="button-form" onclick="window.location = 'my-tasks.html?from=employee'">My tasks</button>
+    </div>
+
+    <div id="judge-tab" class="tabcontent">
+      <p>I want to judge</p>
+      <button class="button-form" onclick= " window.location = 'task.html?from=judge'">Get task</button>
+      <button class="button-form" onclick="window.location = 'my-tasks.html?from=judge'">My claims</button>
+     </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="utils.js" defer></script>
+    <script src="home.js" defer></script>
+  </body>
+</html>                              
+
+

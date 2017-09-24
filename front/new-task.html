@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <link rel="stylesheet" type="text/css" href="icoHack.css">
+     
+    <div class="tab">
+      <button class="tablinks active" id="employer">Employer</button>
+      <button class="tablinks" onclick="window.location.href='home.html?from=employee'" id="employee">Employee</button>
+      <button class="tablinks" onclick="window.location.href='home.html?from=judge'" id="judge">Judge</button>
+    </div> 
+
+    <div id="employer" class="tabcontent" style="display: block">
+      <h2>New task</h2> 
+
+  
+
+      <form action="task.html">
+        Project name:<br> 
+          <input type="text" name="projectname"><br>
+        Description:<br>
+          <input type="text" name="description"><br>
+        Employee:<br>
+          <input type="text" name="employee"><br>
+        Price:<br>
+          <input type="number" name="price"><br>
+        Work deadline (days):<br>
+          <input type="number" name="work-deadline"><br>
+        Claim deadline (days):<br>
+          <input type="number" name="claim-deadline"><br>
+        Judge deadline (days):<br>
+          <input type="number" name="judge-deadline"><br><br>
+        
+        <input type="submit" id="create-task" value="Create" class="button-form">
+        <input type="reset" value="Cancel" onclick="window.location.href='home.html?from=employer'" class="button-form">
+        
+      </form>
+    </div>
+
+    <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
+    <script src="utils.js"></script>
+    <script src="new-task.js"></script>
+  </body>
+</html>                              
+
+
