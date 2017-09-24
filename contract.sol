@@ -13,6 +13,8 @@ contract Project {
     }
     
     struct Proposal {
+        string name;
+
         address employer;
         address employee;
         string taskDescription;
@@ -24,6 +26,7 @@ contract Project {
         uint deadlineWorkDate; // = now + deltaWork
         uint deadlineClaimDate; // = deadlineWorkDate + claimDelta
         uint deadlineVoteDate; // = deadLineClaimDate + voteDelta
+        uint daysForIndividualVote;
         uint minRating;
         uint claimId;
     }
@@ -80,14 +83,18 @@ contract Project {
     
     event createProposalResult(bool success, uint proposalId);
 
-    function createProposal(string _taskDescription, 
+    function createProposal(
+        string _name,
+        string _taskDescription, 
         uint8 _numJudges, 
         uint daysToDeadline, 
         uint daysToClaimDeadline,
         uint daysToVoteDeadline,
+        uint _daysForIndividualVote,
         address _employee) public payable
         {
             Proposal memory newProposal = Proposal({
+                name: _name,
                 employer: msg.sender,
                 employee: _employee,
                 taskDescription: _taskDescription,
@@ -98,6 +105,7 @@ contract Project {
                 deadlineWorkDate: now + daysToDeadline * 1 days,
                 deadlineClaimDate: now + daysToClaimDeadline * 1 days,
                 deadlineVoteDate: now + daysToVoteDeadline * 1 days,
+                daysForIndividualVote: _daysForIndividualVote,
                 minRating: 0,
                 claimId: 0
             });
