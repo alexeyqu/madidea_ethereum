@@ -4,26 +4,59 @@
     <link rel="stylesheet" type="text/css" href="icoHack.css">
      
     <div class="tab">
-      <button class="tablinks" onclick="openCity(event, getFrom(window.location));">Employer</button>
-      <button class="tablinks" onclick="openCity(event, getFrom(window.location));" >Employee</button>
-      <button class="tablinks" onclick="openCity(event, getFrom(window.location));">Judge</button>
+      <button class="tablinks" onclick="window.location='home.html?from=employer'" id="employer">Employer</button>
+      <button class="tablinks" onclick="window.location='home.html?from=employee'" id="employee">Employee</button>
+      <button class="tablinks" onclick="window.location='home.html?from=judge'" id="judge">Judge</button>
     </div>
 
-    <div id="employer" class="tabcontent">
+    <div class="tabcontent" style="display: block;">
       <h2>Task info</h2>
-      <form class="button-form" action="post-claim.html" method="get">
-        <button>Claim</button>
+      <div id="project-name" class="description-line">Name: <span>name</span></div>
+      <div id="project-description" class="description-line">Description: <span>descr</span></div>
+      <div id="project-solution" class="description-line">Solution: <input type="text" class="disabled">
+        <button id="update-solution-button">Update solution</button>
+      </div>
+      <hr>
+      <div id="project-price" class="description-line">Price: <span>100000000000</span>ETH</div>
+      <div id="project-work-deadline" class="description-line">Time to work elapsed: <span>5</span>days</div>
+      <div id="project-open-claim-deadline" class="description-line">Time to open a claim elapsed: <span>open</span></div>
+      <div id="project-close=claim-deadline" class="description-line">Time to close a claim elapsed: <span>close</span></div>
+      <div id="project-judge-eadline" class="description-line">Time for judge decision: <span>5</span>days</div>
+
+
+      <form id="claim-button" class="button-form">
+        <button>Open new claim</button>
       </form>
-    </div>
 
-    <div id="employee" class="tabcontent">
-      <h2>Task info</h2>
-    <form class="button-form" action="home.html" method="get">
-          <button>Done!</button>
-    </form>
+      <form id="send-money-button" class="button-form">
+        <button>Task is done</button>
+      </form>
+
+      <form id="get-money-button" class="button-form">
+        <button>Get money</button>
+      </form>
+
+      <form id="accept-button" class="button-form">
+        <button>Accept</button>
+      </form>
+
+      <form id="decline-button" class="button-form">
+        <button>Decline</button>
+      </form>
+
+      <form id="employer-right-button" class="button-form">
+        <button>Employer</button>
+      </form>
+
+      <form id="employee-right-button" class="button-form">
+        <button>Employee</button>
+      </form>
+
+    </div>
         
     <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
-    <script src="icoHack.js"></script>
+    <script src="utils.js"></script>
+    <script src="task.js" defer></script>
   </body>
 </html>                              
 
