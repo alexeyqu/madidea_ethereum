@@ -4,27 +4,28 @@
     <link rel="stylesheet" type="text/css" href="icoHack.css">
      
     <div class="tab">
-      <button class="tablinks" onclick="window.location='home.html'">Employer</button>
-      <button class="tablinks" onclick="window.location='home.html'" >Employee</button>
-      <button class="tablinks" onclick="window.location='home.html'">Judge</button>
+      <button class="tablinks" onclick="window.location='home.html?from=employer'">Employer</button>
+      <button class="tablinks" onclick="window.location='home.html?from=employee'" >Employee</button>
+      <button class="tablinks" onclick="window.location='home.html?from=judge'">Judge</button>
     </div> 
 
-    <div id="employer" class="tabcontent">
+    <div id="employer" class="tabcontent" style="display: block">
       <h2>New claim</h2>  
 
-  <form action="task.html">
-    Project name:<br> 
-      <input type="text" name="projectname"><br>
-    Comment:<br>
-      <input type="text" name="comment"><br><br>
-    <input type="submit" value="Submit" class="button-form">
-    <input type="reset" value="Reset" class="button-form">
-    
-  </form>
-  </div>
+      <div action="task.html">
+        Comment:<br>
+          <input type="text" name="comment"><br><br>
+        Total Price for judgement:<br>
+          <input type="text" name="price"><br><br>
+        <input type="submit" value="Open the claim" onclick="openProposal()" class="button-form">
+        <input type="reset" value="Cancel" onclick="window.location.href='task.html?from=employer&pid=' + proposalId" class="button-form">
+        
+      </div>
+    </div>
   
     <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
-    <script src="icoHack.js"></script>
+    <script src="utils.js"></script>
+    <script src="claim.js" defer></script>
   </body>
 </html>                              
 

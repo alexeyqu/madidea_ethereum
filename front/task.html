@@ -24,15 +24,15 @@
       <div class="description-line">Time for judge decision: <span id="project-judge-eadline">-</span></div>
 
 
-      <button id="claim-button" class="button-form" onclick="window.location.href='post-claim.html'" style:"display: none">
+      <button id="claim-button" class="button-form" onclick="window.location.href='post-claim.html?pid=' + proposalId" style:"display: none">
         Open new claim
       </button>
 
-      <button id="send-money-button" class="button-form" style:"display: none">
+      <button id="send-money-button" class="button-form" onclick="contract.acceptProposal(proposalId, {from: web3.eth.accounts[0]})" style:"display: none">
         Task is done
       </button>
 
-      <button id="get-money-button" class="button-form">
+      <button id="get-money-button" class="button-form" onclick="getMoney()">
         Get money
       </button>
 
