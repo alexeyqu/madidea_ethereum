@@ -1,5 +1,10 @@
 pragma solidity ^0.4.17;
 contract Project {
+
+    // function Project() public {
+    //     claimList.push(Claim());
+    // }
+
     uint8 constant MIN_JUDGES = 7;
     uint totalEmployeeWins = 0;
     uint totalEmployerWins = 0;
@@ -142,7 +147,9 @@ contract Project {
     }
     
     function addClaimInOpenList(uint claimId) private {
-        openClaimIds.push(claimList.length - 1);
+        if( claimIdToOpenClaimId[claimId] == 0 ) {
+            return;
+        }
         claimIdToOpenClaimId[claimId] = openClaimIds.length - 1;
     }
     
@@ -189,7 +196,7 @@ contract Project {
             bool kickedUp = false;
             uint deleteOffset = 0;
             for (uint j = 0; j - deleteOffset < claimJudges[i].length; j++) {
-                ProposalJudge storage judge = claimJudges[i][j - deleteOffset]; // claim.judges[j - deleteOffset];
+                ProposalJudge storage judge = claimJudges[i][j - deleteOffset];
                 if (judge.deadlineJudgeVoting < now) {
                     deleteJudge(i, j - deleteOffset);
                     kickedUp = true;
@@ -227,15 +234,18 @@ contract Project {
             acceptClaimResult(false);
             return;
         }
+        judgePendingClaimId[msg.sender] = 0;
 
         Claim storage claim = claimList[claimId];
+        Proposal storage proposal = taskList[claim.proposalId];
+
         claimJudges[claimId].push(ProposalJudge({
             id: msg.sender,
             pendingClaimId: claimId,
             decision: JudgeDecision.UNDECIDED,
-            deadlineJudgeVoting: now + 5 days // todo - take from proposal
+            deadlineJudgeVoting: now + proposal.daysForIndividualVote
         }));
-        Proposal storage proposal = taskList[claim.proposalId];
+
         if (claimJudges[claimId].length == proposal.numJudges) {
             dropOpenClaimId(claimIdToOpenClaimId[claimId]);
         }
@@ -253,6 +263,7 @@ contract Project {
                 currentIndex != i) 
             {
                 claimJudges[claimId][currentIndex] = claimJudges[claimId][i];
+                currentIndex++;
             }
         }
         claimJudges[claimId].length = currentIndex;
@@ -450,38 +461,77 @@ contract Project {
 
     /* Getters */
 
-    event getAllProposalsForEmployeeResult(bool success, uint proposalId, string proposalName);
-
-    function getAllProposalsForEmployee(address _employee) constant public {
+    function getProposalForEmployee(address _employee, uint idx) constant public returns (uint proposalId, string name) {
         for (uint i = 0; i < taskList.length; i++) {
             Proposal storage proposal = taskList[i];
             if( proposal.employee == _employee ) {
-                getAllProposalsForEmployeeResult(true, i, proposal.name);
+                if (idx == 0) {
+                    return (i, proposal.name);
+                }
+                idx--;
             }
         }
     }
 
-    event getAllProposalsForEmployerResult(bool success, uint proposalId, string proposalName);
+    function getProposalsLengthForEmployee(address _employee) constant public returns (uint length) {
+        length = 0;
+        for (uint i = 0; i < taskList.length; i++) {
+            Proposal storage proposal = taskList[i];
+            if( proposal.employee == _employee ) {
+                length++;
+            }
+        }
+    }
 
-    function getAllProposalsForEmployer(address _employer) constant public {
+    function getProposalForEmployer(address _employee, uint idx) constant public returns (uint proposalId, string name) {
         for (uint i = 0; i < taskList.length; i++) {
             Proposal storage proposal = taskList[i];
             if( proposal.employer == _employer ) {
-                getAllProposalsForEmployerResult(true, i, proposal.name);
+                if (idx == 0) {
+                    return (i, proposal.name);
+                }
+                idx--;
             }
         }
     }
 
-    event getAllProposalsForJudgeResult(bool success, uint proposalId, string proposalName);
+    function getProposalsLengthForEmployer(address _employee) constant public returns (uint length) {
+        length = 0;
+        for (uint i = 0; i < taskList.length; i++) {
+            Proposal storage proposal = taskList[i];
+            if( proposal.employer == _employer ) {
+                length++;
+            }
+        }
+    }
 
-    function getAllProposalsForJudge(address _judge) constant public {
+    function getProposalsLengthForJudge(address _judge) constant public returns (uint length) {
+        length = 0;
         for (uint i = 0; i < claimList.length; i++) {
             uint proposalId = claimList[i].proposalId;
             string storage proposalName = taskList[proposalId].name;
 
             for (uint j = 0; j < claimJudges[i].length; j++) {
                 if( claimJudges[i][j].id == _judge ) {
-                    getAllProposalsForJudgeResult(true, proposalId, proposalName);
+                    length++;
+                    //getAllProposalsForJudgeResult(true, proposalId, proposalName);
+                }
+            }
+        }
+    }
+
+    function getProposalForJudge(address _judge, uint idx) constant public returns (uint proposalId, string name) {
+        for (uint i = 0; i < claimList.length; i++) {
+            uint proposalId = claimList[i].proposalId;
+            string storage proposalName = taskList[proposalId].name;
+
+            for (uint j = 0; j < claimJudges[i].length; j++) {
+                if( claimJudges[i][j].id == _judge ) {
+                    if (idx == 0) {
+                        return (proposalId, proposalName);
+                    } else {
+                        idx--;
+                    }
                 }
             }
         }
