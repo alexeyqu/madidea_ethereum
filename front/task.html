@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <link rel="stylesheet" type="text/css" href="icoHack.css">
+     
+    <div class="tab">
+      <button class="tablinks" onclick="openCity(event, getFrom(window.location));">Employer</button>
+      <button class="tablinks" onclick="openCity(event, getFrom(window.location));" >Employee</button>
+      <button class="tablinks" onclick="openCity(event, getFrom(window.location));">Judge</button>
+    </div>
+
+    <div id="employer" class="tabcontent">
+      <h2>Task info</h2>
+      <form class="button-form" action="post-claim.html" method="get">
+        <button>Claim</button>
+      </form>
+    </div>
+
+    <div id="employee" class="tabcontent">
+      <h2>Task info</h2>
+    <form class="button-form" action="home.html" method="get">
+          <button>Done!</button>
+    </form>
+        
+    <script src="https://rawgit.com/ethereum/web3.js/develop/dist/web3.min.js"></script>
+    <script src="icoHack.js"></script>
+  </body>
+</html>                              
+
+
