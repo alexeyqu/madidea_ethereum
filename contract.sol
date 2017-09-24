@@ -483,7 +483,7 @@ contract Project {
         }
     }
 
-    function getProposalForEmployer(address _employee, uint idx) constant public returns (uint proposalId, string name) {
+    function getProposalForEmployer(address _employer, uint idx) constant public returns (uint proposalId, string name) {
         for (uint i = 0; i < taskList.length; i++) {
             Proposal storage proposal = taskList[i];
             if( proposal.employer == _employer ) {
@@ -495,7 +495,7 @@ contract Project {
         }
     }
 
-    function getProposalsLengthForEmployer(address _employee) constant public returns (uint length) {
+    function getProposalsLengthForEmployer(address _employer) constant public returns (uint length) {
         length = 0;
         for (uint i = 0; i < taskList.length; i++) {
             Proposal storage proposal = taskList[i];
@@ -522,7 +522,7 @@ contract Project {
 
     function getProposalForJudge(address _judge, uint idx) constant public returns (uint proposalId, string name) {
         for (uint i = 0; i < claimList.length; i++) {
-            uint proposalId = claimList[i].proposalId;
+            proposalId = claimList[i].proposalId;
             string storage proposalName = taskList[proposalId].name;
 
             for (uint j = 0; j < claimJudges[i].length; j++) {
