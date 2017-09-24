@@ -33,7 +33,7 @@ contract Project {
     
     Proposal[] taskList;
     
-    mapping( address => uint8 ) judgeRating;
+    // mapping( address => uint8 ) judgeRating;
     mapping(address => bool) judgePayment;
     mapping(address => uint) judgePendingClaimId;
     
@@ -357,6 +357,25 @@ contract Project {
 
         decideClaimResult(true);
     }
+
+    function decideClaimByProposal(uint proposalId, bool isEmployerInFavor) public {
+        uint claimId = 0;
+        bool found = false;
+
+        for (uint i = 0; i < claimList.length; i++) {
+            if( claimList[i].proposalId == proposalId ) {
+                found = true;
+                claimId = i;
+            }
+        }
+
+        if( !found ) {
+            decideClaimResult(false);
+            return;
+        }
+
+        decideClaim(claimId, isEmployerInFavor);
+    }
     
     //==========================================================================
     // MONEY RETRIEVAL
@@ -373,7 +392,7 @@ contract Project {
         }
 
         msg.sender.transfer(proposal.price);
-        delete taskList[proposalId];
+        // delete taskList[proposalId];
 
         getMoneyAsEmployerResult(true);
     }
@@ -389,7 +408,7 @@ contract Project {
         }
 
         msg.sender.transfer(proposal.price);
-        delete taskList[proposalId];
+        // delete taskList[proposalId];
 
         getMoneyAsEmployeeResult(true);
     }
