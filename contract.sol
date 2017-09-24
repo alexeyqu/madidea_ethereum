@@ -162,14 +162,6 @@ contract Project {
             return;
         }
 
-
-        if( !(msg.sender == proposal.employer && now < proposal.deadlineClaimDate &&
-            now > proposal.deadlineWorkDate && proposal.state == ProposalState.IN_WORK) )
-        {
-            openClaimResult(false, 0);
-            return;
-        }
-
         Claim memory newClaim = Claim({
             proposalId: _proposalId,
             message: _message,
